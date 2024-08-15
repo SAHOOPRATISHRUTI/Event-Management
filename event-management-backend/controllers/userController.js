@@ -1,5 +1,5 @@
 const userService= require('../services/userService')
-
+const jwt = require('jsonwebtoken');
 
 const registerUser= async(req,res)=>{
     try{
@@ -19,16 +19,28 @@ const loginUser= async(req,res)=>{
             return res.status(400).json({ error: 'Invalid email or password' });
         }
 
-        const isMatch = await user.isMatch(password);
-        if (!isMatch) {
-            return res.status(400).json({ error: 'Invalid email or password' });
-          }
+    // Compare the password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Invalid email or password' });
+    }
 
+    // Generate a JWT token
+    const token = jwt.sign({ id: user._id }, process.env.your_jwt_secret, { expiresIn: '1h' });
 
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-          }
-}
+    // Return the token and user info (excluding the password)
+    res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 module.exports={
     registerUser,
