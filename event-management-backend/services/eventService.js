@@ -2,6 +2,8 @@ const Event = require('../model/event');
 
 const createEvent = async (eventData) => {
     const event = new Event(eventData);  // Note the correction to `Event` instead of `event`
+    console.log(eventData);
+    
     await event.save();
     return event;
 };

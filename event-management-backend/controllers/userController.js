@@ -1,5 +1,7 @@
 const userService= require('../services/userService')
 const jwt = require('jsonwebtoken');
+const User = require('../model/user')
+const bcrypt = require('bcryptjs');
 
 const registerUser = async (req, res) => {
   try {
@@ -11,37 +13,38 @@ const registerUser = async (req, res) => {
   }
 };
 
-const loginUser= async(req,res)=>{
-    try{
-        const {email,password}=req.body;
-        const user =  await userService.getUserByEmail(email);
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    console.log('email',email);
+    
 
-        if(!user){
-            return res.status(400).json({ error: 'Invalid email or password' });
-        }
-
-    // Compare the password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ error: 'Invalid email or password' });
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    // Generate a JWT token
-    const token = jwt.sign({ id: user._id }, process.env.your_jwt_secret, { expiresIn: '1h' });
+    // Check if password matches
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
 
-    // Return the token and user info (excluding the password)
-    res.status(200).json({
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
-    });
+    // Generate JWT token (example, ensure you have jwt package installed)
+    const token = jwt.sign(
+      { id: user._id, name: user.name },
+      process.env.your_jwt_secret,
+      { expiresIn: '1h' }
+    );
+
+    res.status(200).json({ token });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 module.exports={
     registerUser,
