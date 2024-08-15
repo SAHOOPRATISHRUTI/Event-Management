@@ -7,17 +7,16 @@ const mainRouter=require('./routes/index')
 const app = express();
 const port = process.env.PORT || 8000;
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-const allowOrigin = ["*", "http://localhost:3000", "http://192.168.1.8:3000"];
-const corsOpts = {
-  origin: allowOrigin,
+// Middleware
+app.use(express.json()); // Replaces bodyParser.json()
+app.use(express.urlencoded({ extended: true })); // Replaces bodyParser.urlencoded()
+app.use(cors({
+  origin: ["*", "http://localhost:3000", "http://192.168.1.8:3000"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
-};
+}));
 
-app.use(cors(corsOpts));
+
 
 // Connect to the database
 connectDB();

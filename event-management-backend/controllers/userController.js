@@ -1,15 +1,16 @@
 const userService= require('../services/userService')
 const jwt = require('jsonwebtoken');
 
-const registerUser= async(req,res)=>{
-    try{
-        const user =  await userService.createUser(req.body);
-        res.status(201).json(user);
+const registerUser = async (req, res) => {
+  try {
+    console.log('Request body:', req.body);  // Log request body to verify data
+    const user = await userService.createUser(req.body);
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
-    }catch(error){
-        res.status(400).json({error:error.message});
-    }
-}
 const loginUser= async(req,res)=>{
     try{
         const {email,password}=req.body;

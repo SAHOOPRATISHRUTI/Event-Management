@@ -1,29 +1,35 @@
-const User=require('../model/user')
-const bcrypt=require('bcryptjs')
+const bcrypt = require('bcryptjs');
+const User = require('../model/user');
 
-const createUser=async (userData)=>{
-    const {name,email,password} =userData;
+const createUser = async (userData) => {
+  const { name, email, password } = userData;
 
-    //if exiting user 
-    const exitingUser=await User.findOne({email});
-    if(exitingUser){
-        throw new Error('Email already exists')
-    }
-    //Hash the password
-    const hashedPassword= await bcrypt.hash(password,10)
+  console.log(`Name: ${name}, Email: ${email}, Password: ${password}`);
+  console.log(`Password type: ${typeof password}`);
 
-    //create new User
-    const user =  User({
-        name,
-        email,
-        password:hashedPassword,
-    });
+  if (typeof password !== 'string') {
+    throw new Error('Password must be a string');
+  }
 
-    //save user to database
-    await user.save();
-    return user;
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new Error('Email already exists');
+  }
 
-}
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const user = new User({
+    name,
+    email,
+    password: hashedPassword,
+  });
+
+  await user.save();
+  return user;
+};
+
+
+
 const getUserByEmail = async(email)=>{
     return await User.findOne({email});
 }
