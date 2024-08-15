@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const connectDB = require('./dbConnection/dbconnection');
-
+const mainRouter=require('./routes/index')
 const app = express();
 const port = process.env.PORT || 8000;
 
@@ -21,6 +21,12 @@ app.use(cors(corsOpts));
 
 // Connect to the database
 connectDB();
+
+
+app.get("/", (req, res) => {
+  res.send("Welcome to Demo API!");
+});
+app.use("/api", mainRouter);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

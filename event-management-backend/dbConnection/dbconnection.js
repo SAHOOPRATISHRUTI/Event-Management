@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-const dbUrl = `${process.env.DATABASE_LOCAL_URL}/${process.env.DB_NAME}`;
+const dbUrl = 'mongodb://localhost:27017/EVENT-MANAGEMENT';
+
 
 const connectDB = async () => {
   try {
